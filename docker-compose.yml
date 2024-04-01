@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  stackapidemo:
+    image: ${DOCKER_REGISTRY-}stackapidemo
+    build:
+      context: .
+      dockerfile: StackApiDemo/Dockerfile
