@@ -24,7 +24,32 @@ builder.Services.AddScoped<IStackOverflowHttpClient, StackOverflowHttpClient>();
 builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
-var app = await builder.Build().InitDataBase();
+var app = builder.Build();
+
+using (var serviceScope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope())
+{
+    var logger = serviceScope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+    var db = serviceScope.ServiceProvider.GetRequiredService<StackOverflowTagsContext>().Database;
+
+    logger.LogInformation("Database migration start");
+    while (!db.CanConnect())
+    {
+        logger.LogInformation("Connecting...");
+        Thread.Sleep(1000);
+    }
+
+    try
+    {
+        serviceScope.ServiceProvider.GetRequiredService<StackOverflowTagsContext>().Database.Migrate();
+        logger.LogInformation("Database migrated");
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Error while migrating database");
+    }
+}
+
+await app.SeedDataBase();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

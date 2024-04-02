@@ -40,7 +40,7 @@ namespace StackApiDemo.Handlers
             }
             catch (Exception ex)
             {
-                _logger.LogError("Error occured while refreshing database data: " + ex.Message);
+                _logger.LogError(ex, "Error occured while refreshing database data: ");
 
                 _repository.RollbackTransaction();
 
@@ -58,7 +58,7 @@ namespace StackApiDemo.Handlers
             }
             catch(Exception ex) 
             {
-                _logger.LogError("Error while getting tags from database: " + ex.Message);
+                _logger.LogError(ex, "Error while getting tags from database: ");
 
                 throw;
             }
