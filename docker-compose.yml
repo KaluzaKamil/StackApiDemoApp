@@ -2,10 +2,20 @@ version: '3.9'
 
 services:
   stackapidemo:
-    image: ${DOCKER_REGISTRY-}stackapidemo
+    image: stackapidemo
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_HTTPS_PORTS=8081
+    ports:
+      - "8080:8080"
+      - "8081:8081"
     build:
       context: .
       dockerfile: StackApiDemo/Dockerfile
+    depends_on:
+      sql:
+        condition: service_healthy
   sql:
     image: "mcr.microsoft.com/mssql/server:latest"
     container_name: docker-sql-server-express
@@ -15,3 +25,7 @@ services:
       - ACCEPT_EULA=y
       - SA_PASSWORD=MyPass@word
       - MSSQL_PID=Express
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-Usa", "-PMyPass@word", "-Q", "select 1"]
+      interval: 1s
+      retries: 20

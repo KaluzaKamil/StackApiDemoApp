@@ -13,7 +13,6 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["StackApiDemo/StackApiDemo.csproj", "StackApiDemo/"]
 RUN dotnet restore "./StackApiDemo/StackApiDemo.csproj"
-COPY entrypoint.sh /entrypoint.sh
 COPY . .
 WORKDIR "/src/StackApiDemo"
 RUN dotnet build "./StackApiDemo.csproj" -c %BUILD_CONFIGURATION% -o /app/build
@@ -22,12 +21,14 @@ FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "./StackApiDemo.csproj" -c %BUILD_CONFIGURATION% -o /app/publish /p:UseAppHost=false
 
-FROM base AS final
+FROM base AS final 
 WORKDIR /app
-COPY --from=publish /app/publish .
 RUN apt update -yq && \
 curl https://packages.microsoft.com/keys/microsoft.asc | tee /etc/apt/trusted.gpg.d/microsoft.asc && \
 curl https://packages.microsoft.com/config/ubuntu/22.04/prod.list | tee /etc/apt/sources.list.d/mssql-release.list && \
 apt-get update -yq && \
 ACCEPT_EULA=Y apt-get install -yq mssql-tools18 unixodbc-dev
+COPY --from=publish /app/publish .
+COPY StackApiDemo/DbInitScripts/DbInit.sql /app/
+COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT bash /entrypoint.sh

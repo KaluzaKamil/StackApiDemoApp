@@ -1,5 +1,7 @@
+set -e
 echo "start entrypoint"
+/opt/mssql-tools18/bin/sqlcmd -No -S sql -U sa -P MyPass@word -d master -i DbInit.sql
+sleep 10
+dotnet dev-certs https
 dotnet StackApiDemo.dll
-sleep 15s
-/opt/mssql-tools18/bin/sqlcmd -S sql -U sa -P MyPass@word -d master -i DbInitScripts/DbInit.sql
 echo "end entrypoint"
