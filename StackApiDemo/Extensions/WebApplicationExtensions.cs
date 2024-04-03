@@ -1,4 +1,6 @@
-﻿using StackApiDemo.Repositories;
+﻿using Microsoft.EntityFrameworkCore;
+using StackApiDemo.Contexts;
+using StackApiDemo.Repositories;
 using StackApiDemo.StackOverflowApiIntegration;
 
 namespace StackApiDemo.Extensions
@@ -27,6 +29,33 @@ namespace StackApiDemo.Extensions
                 }
             }
 
+            return webApplication;
+        }
+
+        public static WebApplication MigrateDatabase(this WebApplication webApplication)
+        {
+            using (var serviceScope = webApplication.Services.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                var logger = serviceScope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+                var db = serviceScope.ServiceProvider.GetRequiredService<StackOverflowTagsContext>().Database;
+
+                logger.LogInformation("Database migration start");
+                while (!db.CanConnect())
+                {
+                    logger.LogInformation("Connecting...");
+                    Thread.Sleep(1000);
+                }
+
+                try
+                {
+                    serviceScope.ServiceProvider.GetRequiredService<StackOverflowTagsContext>().Database.Migrate();
+                    logger.LogInformation("Database migrated");
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Error while migrating database");
+                }
+            }
             return webApplication;
         }
     }
