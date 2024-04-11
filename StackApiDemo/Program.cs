@@ -22,7 +22,10 @@ builder.Services.AddScoped<IStackOverflowTagsDownloader, StackOverflowTagsDownlo
 builder.Services.AddScoped<IStackOverflowTagsRepository,  StackOverflowTagsRepository>();
 builder.Services.AddScoped<IStackOverflowHttpClient, StackOverflowHttpClient>();
 builder.Services.AddControllers().AddJsonOptions(options =>
-    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+    {
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    });
 
 var app = builder.Build();
 

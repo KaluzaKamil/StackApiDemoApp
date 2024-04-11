@@ -29,6 +29,7 @@ namespace StackApiDemo.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("TagId")
+                        .IsRequired()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("description")
@@ -139,33 +140,29 @@ namespace StackApiDemo.Migrations
 
             modelBuilder.Entity("StackApiDemo.Models.TagsModels.Collective", b =>
                 {
-                    b.HasOne("StackApiDemo.Models.TagsModels.Tag", "Tag")
+                    b.HasOne("StackApiDemo.Models.TagsModels.Tag", null)
                         .WithMany("collectives")
-                        .HasForeignKey("TagId");
-
-                    b.Navigation("Tag");
+                        .HasForeignKey("TagId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("StackApiDemo.Models.TagsModels.ExternalLink", b =>
                 {
-                    b.HasOne("StackApiDemo.Models.TagsModels.Collective", "Collective")
+                    b.HasOne("StackApiDemo.Models.TagsModels.Collective", null)
                         .WithMany("external_links")
                         .HasForeignKey("CollectiveId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Collective");
                 });
 
             modelBuilder.Entity("StackApiDemo.Models.TagsModels.Tag", b =>
                 {
-                    b.HasOne("StackApiDemo.Models.TagsModels.TagsImport", "TagsImport")
+                    b.HasOne("StackApiDemo.Models.TagsModels.TagsImport", null)
                         .WithMany("items")
                         .HasForeignKey("TagsImportId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("TagsImport");
                 });
 
             modelBuilder.Entity("StackApiDemo.Models.TagsModels.Collective", b =>

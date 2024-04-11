@@ -17,22 +17,24 @@ namespace StackApiDemo.Contexts
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<TagsImport>()
-                .HasMany(e => e.items)
-                .WithOne(e => e.TagsImport)
-                .HasForeignKey(e => e.TagsImportId)
-                .IsRequired();
+            base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Tag>()
-                .HasMany(e => e.collectives)
-                .WithOne(e => e.Tag)
-                .HasForeignKey(e => e.TagId)
-                .IsRequired(false);
+                .HasOne(t => t.TagsImport)
+                .WithMany(ti => ti.items)
+                .HasForeignKey(t => t.TagsImportId)
+                .IsRequired();
 
             modelBuilder.Entity<Collective>()
-                .HasMany(e => e.external_links)
-                .WithOne(e => e.Collective)
-                .HasForeignKey(e => e.CollectiveId)
+                .HasOne(c => c.Tag)
+                .WithMany(t => t.collectives)
+                .HasForeignKey(c => c.TagId)
+                .IsRequired();
+
+            modelBuilder.Entity<ExternalLink>()
+                .HasOne(el => el.Collective)
+                .WithMany(c => c.external_links)
+                .HasForeignKey(el => el.CollectiveId)
                 .IsRequired();
         }        
     }

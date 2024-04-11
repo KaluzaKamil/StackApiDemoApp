@@ -1,4 +1,5 @@
 ﻿using StackApiDemo.Models.TagsModels;
+using StackApiDemo.Models.ViewModels;
 using StackApiDemo.Parameters;
 using StackApiDemo.Repositories;
 using StackApiDemo.StackOverflowApiIntegration;

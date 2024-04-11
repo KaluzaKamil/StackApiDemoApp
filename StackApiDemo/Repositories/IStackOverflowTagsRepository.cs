@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage;
 using StackApiDemo.Models.TagsModels;
+using StackApiDemo.Models.ViewModels;
 using StackApiDemo.Parameters;
 
 namespace StackApiDemo.Repositories

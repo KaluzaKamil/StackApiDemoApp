@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace StackApiDemo.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -35,6 +35,7 @@ namespace StackApiDemo.Migrations
                     is_required = table.Column<bool>(type: "bit", nullable: false),
                     count = table.Column<int>(type: "int", nullable: false),
                     name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    share = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     TagsImportId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
@@ -58,7 +59,7 @@ namespace StackApiDemo.Migrations
                     link = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     slug = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    TagId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    TagId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -67,7 +68,8 @@ namespace StackApiDemo.Migrations
                         name: "FK_Collectives_Tags_TagId",
                         column: x => x.TagId,
                         principalTable: "Tags",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(

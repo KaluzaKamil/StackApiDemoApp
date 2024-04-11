@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using StackApiDemo.Handlers;
 using StackApiDemo.Models.TagsModels;
+using StackApiDemo.Models.ViewModels;
 using StackApiDemo.Parameters;
 using System.Text.Json;
 
