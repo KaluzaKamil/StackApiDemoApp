@@ -5,7 +5,6 @@ using Microsoft.OpenApi.Validations;
 using StackApiDemo.Contexts;
 using StackApiDemo.Extensions;
 using StackApiDemo.Models.TagsModels;
-using StackApiDemo.Models.ViewModels;
 using StackApiDemo.Parameters;
 
 namespace StackApiDemo.Repositories
