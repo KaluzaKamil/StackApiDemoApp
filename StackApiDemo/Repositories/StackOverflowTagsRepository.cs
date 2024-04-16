@@ -12,13 +12,15 @@ namespace StackApiDemo.Repositories
     public class StackOverflowTagsRepository : IStackOverflowTagsRepository
     {
         private readonly StackOverflowTagsContext _context;
+        private readonly ILogger<StackOverflowTagsRepository> _logger;
 
-        public StackOverflowTagsRepository(StackOverflowTagsContext context)
+        public StackOverflowTagsRepository(StackOverflowTagsContext context, ILogger<StackOverflowTagsRepository> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
-        public IEnumerable<Tag> GetTags(TagParameters tagParameters)
+        public IEnumerable<Tag> Get(TagParameters tagParameters)
         {
             var tags = _context.Tags
                 .OrderByPropertyName(tagParameters.OrderByProperty, tagParameters.OrderByAscending)
@@ -30,6 +32,25 @@ namespace StackApiDemo.Repositories
             tags.ForEach(t => t.collectives?.ToList().ForEach(c => c.external_links = GetExternalLinksByCollectiveId(c.Id).ToList()));
                 
             return tags;
+        }
+
+        public Tag? GetByName(string queriedName)
+        {
+            var tag = _context.Tags
+                .Where(t => t.name == queriedName)
+                .FirstOrDefault();
+           
+            if(tag != null)
+            {
+                tag.collectives = GetCollectivesByTagId(tag.Id).ToList();
+                tag.collectives?.ToList().ForEach(c => c.external_links = GetExternalLinksByCollectiveId(c.Id).ToList());
+                return tag;
+            }
+            else
+            {
+                _logger.LogWarning($"Queried tag \"{queriedName}\" does not exist in the database, returning null.");
+                return null;
+            }
         }
 
         public IEnumerable<Collective> GetCollectivesByTagId(Guid TagId) 

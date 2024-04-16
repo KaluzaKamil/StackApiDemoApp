@@ -18,16 +18,22 @@ namespace StackApiDemo.Controllers
             _stackOverflowTagsHandler = _handler;
         }
 
-        [HttpPut("RefreshDatabase", Name = "RefreshDatabase")]
+        [HttpPut("RefreshDatabase")]
         public async Task<int> RefreshDatabaseAsync()
         {
             return await _stackOverflowTagsHandler.HandleRefreshDatabaseAsync();
         }
 
-        [HttpGet("GetTags", Name = "GetTags")]
-        public IEnumerable<Tag> GetTags([FromQuery]TagParameters tagParameters)
+        [HttpGet("Get")]
+        public IEnumerable<Tag> Get([FromQuery]TagParameters tagParameters)
         {
-            return _stackOverflowTagsHandler.HandleGetTags(tagParameters);
+            return _stackOverflowTagsHandler.HandleGet(tagParameters);
+        }
+
+        [HttpGet("GetByName")]
+        public Tag? GetByName(string name)
+        {
+            return _stackOverflowTagsHandler.HandleGetByName(name);
         }
     }
 }

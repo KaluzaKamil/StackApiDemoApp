@@ -5,7 +5,8 @@ namespace StackApiDemo.Handlers
 {
     public interface IStackOverflowTagsHandler
     {
-        IEnumerable<Tag> HandleGetTags(TagParameters tagParameters);
+        IEnumerable<Tag> HandleGet(TagParameters tagParameters);
+        Tag? HandleGetByName(string name);
         Task<int> HandleRefreshDatabaseAsync();
     }
 }

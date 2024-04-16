@@ -8,7 +8,8 @@ namespace StackApiDemo.Repositories
     {
         int AddTagsImports(IEnumerable<TagsImport> tagsImports);
         int CleanDatabase();
-        IEnumerable<Tag> GetTags(TagParameters tagParameters);
+        IEnumerable<Tag> Get(TagParameters tagParameters);
+        Tag? GetByName(string queriedName);
         public IDbContextTransaction BeginTransaction();
         public void CommitTransaction();
         public void RollbackTransaction();

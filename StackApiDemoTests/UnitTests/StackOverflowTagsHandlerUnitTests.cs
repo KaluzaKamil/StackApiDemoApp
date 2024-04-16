@@ -43,12 +43,12 @@ namespace StackApiDemoTests.UnitTests
             var testTagsList = new List<Tag>() { new Tag() };
             var tagParameters = new TagParameters();
 
-            repositoryMock.Setup(r => r.GetTags(tagParameters)).Returns(testTagsList);
+            repositoryMock.Setup(r => r.Get(tagParameters)).Returns(testTagsList);
 
             var handler = new StackOverflowTagsHandler(loggerMock.Object, repositoryMock.Object, downloaderMock.Object);
 
             //Act
-            var result = handler.HandleGetTags(tagParameters);
+            var result = handler.HandleGet(tagParameters);
 
             //Assert
             Assert.Equal(testTagsList, result);

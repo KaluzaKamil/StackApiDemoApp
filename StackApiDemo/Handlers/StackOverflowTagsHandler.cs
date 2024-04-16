@@ -50,15 +50,29 @@ namespace StackApiDemo.Handlers
             return recordsAdded;
         }
 
-        public IEnumerable<Tag> HandleGetTags(TagParameters tagParameters)
+        public IEnumerable<Tag> HandleGet(TagParameters tagParameters)
         {
             try
             {
-                return _repository.GetTags(tagParameters);
+                return _repository.Get(tagParameters);
             }
             catch(Exception ex) 
             {
                 _logger.LogError(ex, "Error while getting tags from database: ");
+
+                throw;
+            }
+        }
+
+        public Tag? HandleGetByName(string name)
+        {
+            try
+            {
+                return _repository.GetByName(name);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error while getting tag \"{name}\" from database: ");
 
                 throw;
             }
