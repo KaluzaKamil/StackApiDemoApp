@@ -20,7 +20,7 @@ namespace StackApiDemo.Repositories
             _logger = logger;
         }
 
-        public IEnumerable<Tag> Get(TagParameters tagParameters)
+        public IEnumerable<Tag> GetTags(TagParameters tagParameters)
         {
             var tags = _context.Tags
                 .OrderByPropertyName(tagParameters.OrderByProperty, tagParameters.OrderByAscending)
@@ -34,7 +34,7 @@ namespace StackApiDemo.Repositories
             return tags;
         }
 
-        public Tag? GetByName(string queriedName)
+        public Tag? GetTagByName(string queriedName)
         {
             var tag = _context.Tags
                 .Where(t => t.name == queriedName)

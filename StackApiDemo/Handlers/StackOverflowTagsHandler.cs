@@ -1,4 +1,5 @@
-﻿using StackApiDemo.Models.TagsModels;
+﻿using Microsoft.AspNetCore.Mvc;
+using StackApiDemo.Models.TagsModels;
 using StackApiDemo.Parameters;
 using StackApiDemo.Repositories;
 using StackApiDemo.StackOverflowApiIntegration;
@@ -54,7 +55,7 @@ namespace StackApiDemo.Handlers
         {
             try
             {
-                return _repository.Get(tagParameters);
+                return _repository.GetTags(tagParameters);
             }
             catch(Exception ex) 
             {
@@ -68,7 +69,7 @@ namespace StackApiDemo.Handlers
         {
             try
             {
-                return _repository.GetByName(name);
+                return _repository.GetTagByName(name);
             }
             catch (Exception ex)
             {
