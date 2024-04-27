@@ -18,16 +18,22 @@ namespace StackApiDemo.Controllers
             _stackOverflowTagsHandler = _handler;
         }
 
-        [HttpPut("RefreshDatabase")]
-        public async Task<ActionResult<int>> RefreshDatabaseAsync()
+        [HttpPost("RefreshDatabase")]
+        public async Task<ActionResult> RefreshDatabaseAsync()
         {
-            return new ActionResult<int>(await _stackOverflowTagsHandler.HandleRefreshDatabaseAsync());
+            await _stackOverflowTagsHandler.HandleRefreshDatabaseAsync();
+            return Created();
         }
 
         [HttpGet("Get")]
         public ActionResult<IEnumerable<Tag>> Get([FromQuery]TagParameters tagParameters)
         {
-            return new ActionResult<IEnumerable<Tag>>(_stackOverflowTagsHandler.HandleGet(tagParameters));
+            var tags = _stackOverflowTagsHandler.HandleGet(tagParameters);
+
+            if (tags == null)
+                return NotFound();
+
+            return Ok(tags);
         }
 
         [HttpGet("GetByName")]
@@ -38,7 +44,15 @@ namespace StackApiDemo.Controllers
             if (tag == null)
                 return NotFound();
 
-            return new ActionResult<Tag?>(tag);
+            return Ok(tag);
+        }
+
+        [HttpPost("AddTag")]
+        public ActionResult AddTagsImport(TagsImport tagsImport)
+        {
+            var result = _stackOverflowTagsHandler.HandleAddTagsImport(tagsImport);
+
+            return result > 0 ? Created() : BadRequest();
         }
     }
 }

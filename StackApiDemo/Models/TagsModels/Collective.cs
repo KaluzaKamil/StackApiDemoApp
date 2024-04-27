@@ -4,6 +4,7 @@ namespace StackApiDemo.Models.TagsModels
 {
     public class Collective
     {
+        [JsonIgnore]
         public Guid Id { get; set; }
         public string[] tags { get; set; }
         public ICollection<ExternalLink> external_links { get; set; }

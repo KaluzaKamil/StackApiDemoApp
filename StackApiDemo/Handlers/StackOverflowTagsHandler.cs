@@ -3,6 +3,7 @@ using StackApiDemo.Models.TagsModels;
 using StackApiDemo.Parameters;
 using StackApiDemo.Repositories;
 using StackApiDemo.StackOverflowApiIntegration;
+using System.Text.Json;
 
 namespace StackApiDemo.Handlers
 {
@@ -74,6 +75,20 @@ namespace StackApiDemo.Handlers
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error while getting tag \"{name}\" from database: ");
+
+                throw;
+            }
+        }
+
+        public int HandleAddTagsImport(TagsImport tagsImport)
+        {
+            try
+            {
+                return _repository.AddTagsImports(new List<TagsImport> { tagsImport });
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, $"Error while adding tags import {tagsImport}");
 
                 throw;
             }

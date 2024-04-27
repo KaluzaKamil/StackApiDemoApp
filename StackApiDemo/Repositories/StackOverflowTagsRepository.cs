@@ -65,33 +65,10 @@ namespace StackApiDemo.Repositories
 
         public int AddTagsImports(IEnumerable<TagsImport> tagsImports)
         {
-            var tagsPopulation = tagsImports.SelectMany(t => t.items).Sum(i => i.count);
-            foreach (var tagsImport in tagsImports)
-            {
-                foreach (var tag in tagsImport.items)
-                {
-                    tag.share = ((decimal)tag.count / (decimal)tagsPopulation) * 100;
-                    tag.TagsImport = tagsImport;
+            var tagsPopulation = tagsImports.SelectMany(t => t.items).Sum(i => i.count) + _context.Tags.Sum(t => t.count);
 
-                    if (tag.collectives != null)
-                    {
-                        foreach (var collective in tag.collectives)
-                        {
-                            collective.Tag = tag;
-                            collective.external_links.ToList().ForEach(el => el.Collective = collective);
-                        }
-                    }
-                }
-
-                var collectives = tagsImport.items.Where(i => i.collectives != null).SelectMany(i => i.collectives);
-                var extLinks = collectives.SelectMany(c => c.external_links);
-               
-                _context.ExternalLinks.AddRange(extLinks);
-                _context.Collectives.AddRange(collectives);
-                _context.Tags.AddRange(tagsImport.items);
-                _context.TagsImports.Add(tagsImport);
-
-            }
+            foreach (var tagsImport in tagsImports)          
+                ProcessTagsImport(tagsImport, tagsPopulation);
 
             return _context.SaveChanges();
         }
@@ -118,6 +95,46 @@ namespace StackApiDemo.Repositories
         public void RollbackTransaction()
         {
             _context.Database.RollbackTransaction();
+        }
+
+        private void ProcessTagsImport(TagsImport tagsImport, int tagsPopulation)
+        {
+            foreach (var tag in tagsImport.items)
+            {
+                tag.TagsImportId = tagsImport.Id;
+                tag.TagsImport = tagsImport;
+                tag.share = ((decimal)tag.count / (decimal)tagsPopulation) * 100;
+
+                if (tag.collectives != null)
+                {
+                    foreach (var collective in tag.collectives)
+                    {
+                        collective.TagId = tag.Id;
+                        collective.Tag = tag;
+                        collective.external_links.ToList().ForEach(el => el.Collective = collective);
+                        collective.external_links.ToList().ForEach(el => el.CollectiveId = collective.Id);
+                    }
+                }
+            }
+
+            var collectives = tagsImport.items.Where(i => i.collectives != null).SelectMany(i => i.collectives);
+            var extLinks = collectives.SelectMany(c => c.external_links);
+
+            _context.ExternalLinks.AddRange(extLinks);
+            _context.Collectives.AddRange(collectives);
+            _context.Tags.AddRange(tagsImport.items);
+            _context.TagsImports.Add(tagsImport);
+
+            UpdateTagsShares(tagsPopulation);
+
+        }
+
+        private void UpdateTagsShares(int tagsPopulation)
+        {
+            foreach (var tag in _context.Tags)
+            {
+                tag.share = ((decimal)tag.count / (decimal)tagsPopulation) * 100;
+            }
         }
     }
 }

@@ -9,5 +9,6 @@ namespace StackApiDemo.Handlers
         IEnumerable<Tag> HandleGet(TagParameters tagParameters);
         Tag? HandleGetByName(string name);
         Task<int> HandleRefreshDatabaseAsync();
+        int HandleAddTagsImport(TagsImport tagsImport);
     }
 }
