@@ -20,8 +20,8 @@ namespace StackApiDemo.Extensions
                 {
                     var tagsImportsList = await downloader.ImportStackOverflowTagsAsync();
 
-                    repository.CleanDatabase();
-                    repository.AddTagsImports(tagsImportsList);
+                    await repository.CleanDatabaseAsync();
+                    await repository.AddTagsImportsAsync(tagsImportsList);
                 }
                 catch (Exception ex)
                 {

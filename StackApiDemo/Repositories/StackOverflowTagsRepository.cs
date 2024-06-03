@@ -20,7 +20,7 @@ namespace StackApiDemo.Repositories
             _logger = logger;
         }
 
-        public IEnumerable<Tag> GetTags(TagParameters tagParameters)
+        public async Task<IEnumerable<Tag>> GetTagsAsync(TagParameters tagParameters)
         {
             var tags = _context.Tags
                 .OrderByPropertyName(tagParameters.OrderByProperty, tagParameters.OrderByAscending)
@@ -34,7 +34,7 @@ namespace StackApiDemo.Repositories
             return tags;
         }
 
-        public Tag? GetTagByName(string queriedName)
+        public async Task<Tag?> GetTagByNameAsync(string queriedName)
         {
             var tag = _context.Tags
                 .Where(t => t.name == queriedName)
@@ -63,23 +63,54 @@ namespace StackApiDemo.Repositories
             return _context.ExternalLinks.Where(el => el.CollectiveId == CollectiveId);
         }
 
-        public int AddTagsImports(IEnumerable<TagsImport> tagsImports)
+        public async Task<int> AddTagsImportsAsync(IEnumerable<TagsImport> tagsImports)
         {
             var tagsPopulation = tagsImports.SelectMany(t => t.items).Sum(i => i.count) + _context.Tags.Sum(t => t.count);
 
             foreach (var tagsImport in tagsImports)          
                 ProcessTagsImport(tagsImport, tagsPopulation);
 
-            return _context.SaveChanges();
+            return await _context.SaveChangesAsync();
         }
 
-        public int CleanDatabase()
+        public async Task<int> DeleteTagAsync(string name)
+        {
+            var tag = await _context.Tags.FirstOrDefaultAsync(t => t.name == name);
+
+            if (tag != null)
+            {
+                _context.Tags.Remove(tag);
+                UpdateTagsShares(_context.Tags.Sum(t => t.count));
+            }
+
+            return await _context.SaveChangesAsync();
+        }
+
+        public async Task<int> UpdateTagAsync(Tag tag)
+        {
+            var tagToUpdate = await _context.Tags.FirstOrDefaultAsync(t => t.name == tag.name);
+
+            if(tagToUpdate != null)
+            {
+                tagToUpdate.is_required = tag.is_required;
+                tagToUpdate.has_synonyms = tag.has_synonyms;
+                tagToUpdate.count = tag.count;
+                tagToUpdate.collectives = tag.collectives;
+                tagToUpdate.is_moderator_only = tag.is_moderator_only;
+
+                UpdateTagsShares(_context.Tags.Sum(t => t.count));
+            }
+
+            return await _context.SaveChangesAsync();
+        }
+
+        public async Task<int> CleanDatabaseAsync()
         {
             _context.ExternalLinks.RemoveRange(_context.ExternalLinks);
             _context.Collectives.RemoveRange(_context.Collectives);
             _context.Tags.RemoveRange(_context.Tags);
 
-            return _context.SaveChanges();
+            return await _context.SaveChangesAsync();
         }
 
         public IDbContextTransaction BeginTransaction()

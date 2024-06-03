@@ -32,9 +32,9 @@ namespace StackApiDemo.Handlers
 
                 _repository.BeginTransaction();
 
-                _repository.CleanDatabase();
+                _repository.CleanDatabaseAsync();
 
-                recordsAdded = _repository.AddTagsImports(tagsImportsList);
+                recordsAdded = await _repository.AddTagsImportsAsync(tagsImportsList);
 
                 _repository.CommitTransaction();
 
@@ -52,11 +52,11 @@ namespace StackApiDemo.Handlers
             return recordsAdded;
         }
 
-        public IEnumerable<Tag> HandleGet(TagParameters tagParameters)
+        public async Task<IEnumerable<Tag>> HandleGetAsync(TagParameters tagParameters)
         {
             try
             {
-                return _repository.GetTags(tagParameters);
+                return await _repository.GetTagsAsync(tagParameters);
             }
             catch(Exception ex) 
             {
@@ -66,11 +66,11 @@ namespace StackApiDemo.Handlers
             }
         }
 
-        public Tag? HandleGetByName(string name)
+        public async Task<Tag?> HandleGetByNameAsync(string name)
         {
             try
             {
-                return _repository.GetTagByName(name);
+                return await _repository.GetTagByNameAsync(name);
             }
             catch (Exception ex)
             {
@@ -80,15 +80,43 @@ namespace StackApiDemo.Handlers
             }
         }
 
-        public int HandleAddTagsImport(TagsImport tagsImport)
+        public async Task<int> HandleAddTagsImportAsync(TagsImport tagsImport)
         {
             try
             {
-                return _repository.AddTagsImports(new List<TagsImport> { tagsImport });
+                return await _repository.AddTagsImportsAsync(new List<TagsImport> { tagsImport });
             }
             catch(Exception ex)
             {
                 _logger.LogError(ex, $"Error while adding tags import {tagsImport}");
+
+                throw;
+            }
+        }
+
+        public async Task<int> HandleDeleteTagAsync(string name)
+        {
+            try
+            {
+                return await _repository.DeleteTagAsync(name);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, $"Error while deleting tag {name}");
+
+                throw;
+            }
+        }
+
+        public async Task<int> HandleUpdateTagAsync(Tag tag)
+        {
+            try
+            {
+                return await _repository.UpdateTagAsync(tag);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, $"Error while updating tag {tag.name}");
 
                 throw;
             }

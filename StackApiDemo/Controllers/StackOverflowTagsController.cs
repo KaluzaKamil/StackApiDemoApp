@@ -19,16 +19,16 @@ namespace StackApiDemo.Controllers
         }
 
         [HttpPost("RefreshDatabase")]
-        public async Task<ActionResult> RefreshDatabaseAsync()
+        public async Task<IActionResult> RefreshDatabaseAsync()
         {
             await _stackOverflowTagsHandler.HandleRefreshDatabaseAsync();
             return Created();
         }
 
         [HttpGet("Get")]
-        public ActionResult<IEnumerable<Tag>> Get([FromQuery]TagParameters tagParameters)
+        public async Task<IActionResult> GetAsync([FromQuery]TagParameters tagParameters)
         {
-            var tags = _stackOverflowTagsHandler.HandleGet(tagParameters);
+            var tags = await _stackOverflowTagsHandler.HandleGetAsync(tagParameters);
 
             if (tags == null)
                 return NotFound();
@@ -37,9 +37,9 @@ namespace StackApiDemo.Controllers
         }
 
         [HttpGet("GetByName")]
-        public ActionResult<Tag?> GetByName(string name)
+        public async Task<IActionResult> GetByNameAsync(string name)
         {
-            var tag = _stackOverflowTagsHandler.HandleGetByName(name);
+            var tag = await _stackOverflowTagsHandler.HandleGetByNameAsync(name);
 
             if (tag == null)
                 return NotFound();
@@ -48,11 +48,27 @@ namespace StackApiDemo.Controllers
         }
 
         [HttpPost("AddTag")]
-        public ActionResult AddTagsImport(TagsImport tagsImport)
+        public async Task<IActionResult> AddTagsImportAsync(TagsImport tagsImport)
         {
-            var result = _stackOverflowTagsHandler.HandleAddTagsImport(tagsImport);
+            var result = await _stackOverflowTagsHandler.HandleAddTagsImportAsync(tagsImport);
 
             return result > 0 ? Created() : BadRequest();
+        }
+
+        [HttpDelete("DeleteTag")]
+        public async Task<IActionResult> DeleteTagAsync(string name)
+        {
+            var result = await _stackOverflowTagsHandler.HandleDeleteTagAsync(name);
+
+            return result > 0 ? NoContent() : NotFound();
+        }
+
+        [HttpPut("UpdateTag")]
+        public async Task<IActionResult> UpdateTagAsync(Tag tag)
+        {
+            var result = await _stackOverflowTagsHandler.HandleUpdateTagAsync(tag);
+
+            return result > 0 ? NoContent() : NotFound();
         }
     }
 }

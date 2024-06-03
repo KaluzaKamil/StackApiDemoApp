@@ -6,9 +6,11 @@ namespace StackApiDemo.Handlers
 {
     public interface IStackOverflowTagsHandler
     {
-        IEnumerable<Tag> HandleGet(TagParameters tagParameters);
-        Tag? HandleGetByName(string name);
+        Task<IEnumerable<Tag>> HandleGetAsync(TagParameters tagParameters);
+        Task<Tag?> HandleGetByNameAsync(string name);
         Task<int> HandleRefreshDatabaseAsync();
-        int HandleAddTagsImport(TagsImport tagsImport);
+        Task<int> HandleAddTagsImportAsync(TagsImport tagsImport);
+        Task<int> HandleDeleteTagAsync(string name);
+        Task<int> HandleUpdateTagAsync(Tag tag);
     }
 }

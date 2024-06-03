@@ -6,10 +6,12 @@ namespace StackApiDemo.Repositories
 {
     public interface IStackOverflowTagsRepository
     {
-        int AddTagsImports(IEnumerable<TagsImport> tagsImports);
-        int CleanDatabase();
-        IEnumerable<Tag> GetTags(TagParameters tagParameters);
-        Tag? GetTagByName(string queriedName);
+        Task<int> AddTagsImportsAsync(IEnumerable<TagsImport> tagsImports);
+        Task<int> CleanDatabaseAsync();
+        Task<IEnumerable<Tag>> GetTagsAsync(TagParameters tagParameters);
+        Task<Tag?> GetTagByNameAsync(string queriedName);
+        Task<int> DeleteTagAsync(string name);
+        Task<int> UpdateTagAsync(Tag tag);
         public IDbContextTransaction BeginTransaction();
         public void CommitTransaction();
         public void RollbackTransaction();

@@ -26,6 +26,13 @@ builder.Services.AddControllers().AddJsonOptions(options =>
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
     });
+builder.Services.AddLogging(options =>
+    options
+        .AddDebug()
+        .AddConsole()
+        .AddConfiguration(builder.Configuration.GetSection("Logging"))
+        .SetMinimumLevel(LogLevel.Information)
+    );
 
 var app = builder.Build();
 

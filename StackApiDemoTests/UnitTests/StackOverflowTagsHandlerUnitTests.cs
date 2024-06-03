@@ -22,7 +22,7 @@ namespace StackApiDemoTests.UnitTests
             downloaderMock.Setup(d => d.ImportStackOverflowTagsAsync())
                 .Returns(Task.FromResult(testTagImportsList));
 
-            repositoryMock.Setup(r => r.AddTagsImports(testTagImportsList)).Returns(1);
+            repositoryMock.Setup(r => r.AddTagsImportsAsync(testTagImportsList)).ReturnsAsync(1);
 
             var handler = new StackOverflowTagsHandler(loggerMock.Object, repositoryMock.Object, downloaderMock.Object);
 
@@ -34,7 +34,7 @@ namespace StackApiDemoTests.UnitTests
         }
 
         [Fact]
-        public void Success_HandleGetTags_ReturnsTags()
+        public async Task Success_HandleGetTags_ReturnsTagsAsync()
         {
             //Arrange
             var loggerMock = new Mock<ILogger<StackOverflowTagsHandler>>();
@@ -43,19 +43,19 @@ namespace StackApiDemoTests.UnitTests
             var testTagsList = new List<Tag>() { new Tag() };
             var tagParameters = new TagParameters();
 
-            repositoryMock.Setup(r => r.GetTags(tagParameters)).Returns(testTagsList);
+            repositoryMock.Setup(r => r.GetTagsAsync(tagParameters)).ReturnsAsync(testTagsList);
 
             var handler = new StackOverflowTagsHandler(loggerMock.Object, repositoryMock.Object, downloaderMock.Object);
 
             //Act
-            var result = handler.HandleGet(tagParameters);
+            var result = await handler.HandleGetAsync(tagParameters);
 
             //Assert
             Assert.Equal(testTagsList, result);
         }
 
         [Fact]
-        public void TagExists_HandleGetTagByName_ReturnsTag()
+        public async Task TagExists_HandleGetTagByName_ReturnsTagAsync()
         {
             //Arrange
             var loggerMock = new Mock<ILogger<StackOverflowTagsHandler>>();
@@ -64,19 +64,19 @@ namespace StackApiDemoTests.UnitTests
             var tag = new Tag();
             var name = "test";
 
-            repositoryMock.Setup(r => r.GetTagByName(name)).Returns(tag);
+            repositoryMock.Setup(r => r.GetTagByNameAsync(name)).ReturnsAsync(tag);
 
             var handler = new StackOverflowTagsHandler(loggerMock.Object, repositoryMock.Object, downloaderMock.Object);
 
             //Act
-            var result = handler.HandleGetByName(name);
+            var result = await handler.HandleGetByNameAsync(name);
 
             //Assert
             Assert.Equal(tag, result);
         }
 
         [Fact]
-        public void TagNotExists_HandleGetTagByName_ReturnsNull()
+        public async Task TagNotExists_HandleGetTagByName_ReturnsNullAsync()
         {
             //Arrange
             var loggerMock = new Mock<ILogger<StackOverflowTagsHandler>>();
@@ -85,12 +85,12 @@ namespace StackApiDemoTests.UnitTests
             Tag? tag = null;
             var name = "test";
 
-            repositoryMock.Setup(r => r.GetTagByName(name)).Returns(tag);
+            repositoryMock.Setup(r => r.GetTagByNameAsync(name)).ReturnsAsync(tag);
 
             var handler = new StackOverflowTagsHandler(loggerMock.Object, repositoryMock.Object, downloaderMock.Object);
 
             //Act
-            var result = handler.HandleGetByName(name);
+            var result = await handler.HandleGetByNameAsync(name);
 
             //Assert
             Assert.Equal(tag, result);
