@@ -30,13 +30,13 @@ namespace StackApiDemo.Handlers
 
                 var tagsImportsList = await _downloader.ImportStackOverflowTagsAsync();
 
-                _repository.BeginTransaction();
+                await _repository.BeginTransactionAsync();
 
-                _repository.CleanDatabaseAsync();
+                await _repository.CleanDatabaseAsync();
 
                 recordsAdded = await _repository.AddTagsImportsAsync(tagsImportsList);
 
-                _repository.CommitTransaction();
+                await _repository.CommitTransactionAsync();
 
                 _logger.LogInformation("Database refresh end");
             }
@@ -44,7 +44,7 @@ namespace StackApiDemo.Handlers
             {
                 _logger.LogError(ex, "Error occured while refreshing database data: ");
 
-                _repository.RollbackTransaction();
+                await _repository.RollbackTransactionAsync();
 
                 throw;
             }

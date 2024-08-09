@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using StackApiDemo.Contexts;
 using StackApiDemo.Extensions;
 using StackApiDemo.Handlers;
+using StackApiDemo.RabbitMQ;
 using StackApiDemo.Repositories;
 using StackApiDemo.StackOverflowApiIntegration;
 using System.Text.Json.Serialization;
@@ -33,6 +34,7 @@ builder.Services.AddLogging(options =>
         .AddConfiguration(builder.Configuration.GetSection("Logging"))
         .SetMinimumLevel(LogLevel.Information)
     );
+builder.Services.AddScoped<IRabbitMQSender, RabbitMQSender>();
 
 var app = builder.Build();
 

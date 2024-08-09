@@ -28,8 +28,8 @@ namespace StackApiDemo.Repositories
                 .Take(tagParameters.PageSize)
                 .ToList();
 
-            tags.ForEach(t => t.collectives = GetCollectivesByTagId(t.Id).ToList());
-            tags.ForEach(t => t.collectives?.ToList().ForEach(c => c.external_links = GetExternalLinksByCollectiveId(c.Id).ToList()));
+            tags.ForEach(async t => t.collectives = await GetCollectivesByTagIdAsync(t.Id));
+            tags.ForEach(t => t.collectives?.ToList().ForEach(async c => c.external_links = await GetExternalLinksByCollectiveIdAsync(c.Id)));
                 
             return tags;
         }
@@ -42,8 +42,8 @@ namespace StackApiDemo.Repositories
            
             if(tag != null)
             {
-                tag.collectives = GetCollectivesByTagId(tag.Id).ToList();
-                tag.collectives?.ToList().ForEach(c => c.external_links = GetExternalLinksByCollectiveId(c.Id).ToList());
+                tag.collectives = await GetCollectivesByTagIdAsync(tag.Id);
+                tag.collectives?.ToList().ForEach(async c => c.external_links = await GetExternalLinksByCollectiveIdAsync(c.Id));
                 return tag;
             }
             else
@@ -53,14 +53,14 @@ namespace StackApiDemo.Repositories
             }
         }
 
-        public IEnumerable<Collective> GetCollectivesByTagId(Guid TagId) 
+        public async Task<ICollection<Collective>> GetCollectivesByTagIdAsync(Guid TagId) 
         {
-            return _context.Collectives.Where(c => c.TagId == TagId);
+            return await _context.Collectives.Where(c => c.TagId == TagId).ToListAsync();
         }
 
-        public IEnumerable<ExternalLink> GetExternalLinksByCollectiveId(Guid CollectiveId) 
+        public async Task<ICollection<ExternalLink>> GetExternalLinksByCollectiveIdAsync(Guid CollectiveId) 
         {
-            return _context.ExternalLinks.Where(el => el.CollectiveId == CollectiveId);
+            return await _context.ExternalLinks.Where(el => el.CollectiveId == CollectiveId).ToListAsync();
         }
 
         public async Task<int> AddTagsImportsAsync(IEnumerable<TagsImport> tagsImports)
@@ -68,7 +68,7 @@ namespace StackApiDemo.Repositories
             var tagsPopulation = tagsImports.SelectMany(t => t.items).Sum(i => i.count) + _context.Tags.Sum(t => t.count);
 
             foreach (var tagsImport in tagsImports)          
-                ProcessTagsImport(tagsImport, tagsPopulation);
+                ProcessTagsImportAsync(tagsImport, tagsPopulation);
 
             return await _context.SaveChangesAsync();
         }
@@ -113,22 +113,22 @@ namespace StackApiDemo.Repositories
             return await _context.SaveChangesAsync();
         }
 
-        public IDbContextTransaction BeginTransaction()
+        public Task<IDbContextTransaction> BeginTransactionAsync()
         {
-            return _context.Database.BeginTransaction();
+            return _context.Database.BeginTransactionAsync();
         }
 
-        public void CommitTransaction()
+        public async Task CommitTransactionAsync()
         {
-            _context.Database.CommitTransaction();
+            await _context.Database.CommitTransactionAsync();
         }
 
-        public void RollbackTransaction()
+        public async Task RollbackTransactionAsync()
         {
-            _context.Database.RollbackTransaction();
+            await _context.Database.RollbackTransactionAsync();
         }
 
-        private void ProcessTagsImport(TagsImport tagsImport, int tagsPopulation)
+        private async void ProcessTagsImportAsync(TagsImport tagsImport, int tagsPopulation)
         {
             foreach (var tag in tagsImport.items)
             {
@@ -151,10 +151,10 @@ namespace StackApiDemo.Repositories
             var collectives = tagsImport.items.Where(i => i.collectives != null).SelectMany(i => i.collectives);
             var extLinks = collectives.SelectMany(c => c.external_links);
 
-            _context.ExternalLinks.AddRange(extLinks);
-            _context.Collectives.AddRange(collectives);
-            _context.Tags.AddRange(tagsImport.items);
-            _context.TagsImports.Add(tagsImport);
+            await _context.ExternalLinks.AddRangeAsync(extLinks);
+            await _context.Collectives.AddRangeAsync(collectives);
+            await _context.Tags.AddRangeAsync(tagsImport.items);
+            await _context.TagsImports.AddAsync(tagsImport);
 
             UpdateTagsShares(tagsPopulation);
 

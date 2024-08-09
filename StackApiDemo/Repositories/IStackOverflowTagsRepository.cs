@@ -12,8 +12,8 @@ namespace StackApiDemo.Repositories
         Task<Tag?> GetTagByNameAsync(string queriedName);
         Task<int> DeleteTagAsync(string name);
         Task<int> UpdateTagAsync(Tag tag);
-        public IDbContextTransaction BeginTransaction();
-        public void CommitTransaction();
-        public void RollbackTransaction();
+        public Task<IDbContextTransaction> BeginTransactionAsync();
+        public Task CommitTransactionAsync();
+        public Task RollbackTransactionAsync();
     }
 }

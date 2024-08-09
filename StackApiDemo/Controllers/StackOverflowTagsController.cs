@@ -2,6 +2,7 @@
 using StackApiDemo.Handlers;
 using StackApiDemo.Models.TagsModels;
 using StackApiDemo.Parameters;
+using StackApiDemo.RabbitMQ;
 
 namespace StackApiDemo.Controllers
 {
@@ -11,17 +12,26 @@ namespace StackApiDemo.Controllers
     {
         private readonly ILogger<StackOverflowTagsController> _logger;
         private readonly IStackOverflowTagsHandler _stackOverflowTagsHandler;
+        private readonly IRabbitMQSender _rabbitMQSender;
 
-        public StackOverflowTagsController(ILogger<StackOverflowTagsController> logger, IStackOverflowTagsHandler _handler)
+        public StackOverflowTagsController(ILogger<StackOverflowTagsController> logger, IStackOverflowTagsHandler handler, IRabbitMQSender rabbitMQSender)
         {
             _logger = logger;
-            _stackOverflowTagsHandler = _handler;
+            _stackOverflowTagsHandler = handler;
+            _rabbitMQSender = rabbitMQSender;
         }
 
         [HttpPost("RefreshDatabase")]
         public async Task<IActionResult> RefreshDatabaseAsync()
         {
             await _stackOverflowTagsHandler.HandleRefreshDatabaseAsync();
+            return Created();
+        }
+
+        [HttpPost("RefreshDatabaseRabbit")]
+        public IActionResult RefreshDatabaseRabbit()
+        {
+            _rabbitMQSender.RefreshDatabase();
             return Created();
         }
 

@@ -26,6 +26,29 @@ services:
       - SA_PASSWORD=MyPass@word
       - MSSQL_PID=Express
     healthcheck:
-      test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-Usa", "-PMyPass@word", "-Q", "select 1"]
-      interval: 1s
+      test: ["CMD", "/opt/mssql-tools18/bin/sqlcmd", "-C", "-Usa", "-PMyPass@word", "-Q", "select 1"]
+      interval: 5s
       retries: 20
+  rabbitmq:
+    image: rabbitmq:3-management 
+    ports:
+        - "5672:5672"
+        - "15672:15672"
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 20s
+      timeout: 20s
+      retries: 3
+  rabbitreceiver:
+    build:
+      context: .
+      dockerfile: RabbitReceiver/Dockerfile
+    restart: always
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      stackapidemo:
+        condition: service_started
+
+  
+  
