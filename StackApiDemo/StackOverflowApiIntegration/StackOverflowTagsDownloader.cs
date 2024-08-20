@@ -19,6 +19,7 @@ namespace StackApiDemo.StackOverflowApiIntegration
 
             httpClient.BaseAddress = new Uri("https://api.stackexchange.com/");
             httpClient.DefaultRequestHeaders.Accept.Clear();
+            httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (compatible; AcmeInc/1.0)");
 
             for (var i = 1; i <= 10; i++)
             {

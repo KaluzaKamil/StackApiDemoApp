@@ -2,7 +2,7 @@
 using StackApiDemo.Models.TagsModels;
 using StackApiDemo.StackOverflowApiIntegration;
 
-namespace StackApiDemoTests.UnitTests
+namespace StackApiDemoTests.IntegrationTests
 {
     public class StackOverflowTagsDownloaderTests
     {

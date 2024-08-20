@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using StackApiDemo.Handlers;
 using StackApiDemo.Models.TagsModels;
 using StackApiDemo.Parameters;
@@ -36,7 +37,7 @@ namespace StackApiDemo.Controllers
         }
 
         [HttpGet("Get")]
-        public async Task<IActionResult> GetAsync([FromQuery]TagParameters tagParameters)
+        public async Task<IActionResult> GetAsync([FromQuery] TagParameters tagParameters)
         {
             var tags = await _stackOverflowTagsHandler.HandleGetAsync(tagParameters);
 
